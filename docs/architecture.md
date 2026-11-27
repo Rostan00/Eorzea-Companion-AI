@@ -1,72 +1,82 @@
-# Architecture
+# Arquitetura
 
-## Goals
+## Objetivos
 
-The companion should feel like a continuous character rather than a stateless chatbot. It should be available through a lightweight client while its reasoning, memory, and scheduled work can run remotely.
+O companheiro deve se sentir como um personagem contínuo, e não apenas um chatbot sem estado. Ele precisa estar disponível através de um cliente leve, enquanto o raciocínio, a memória e trabalhos agendados podem rodar remotamente.
 
-## High-level components
+## Componentes de alto nível
 
 ```text
-Desktop / Web Client
-  |  chat, voice, notifications
+Cliente Desktop / Web
+  |  chat, voz, notificações
   v
-FastAPI Backend
+Backend FastAPI
   |
-  +-- Agent Core
-  |     +-- Perception / context assembly
-  |     +-- Decision and policy layer
-  |     +-- Planner / goal manager
+  +-- Núcleo do Agente
+  |     +-- Percepção / montagem de contexto
+  |     +-- Camada de decisão e políticas
+  |     +-- Planejador / gerenciador de objetivos
   |
-  +-- Character
-  |     +-- Identity and persona
-  |     +-- Emotional / relationship state
+  +-- Personagem
+  |     +-- Identidade e persona
+  |     +-- Estado emocional / de relacionamento
   |
-  +-- Memory
-  |     +-- Episodic memories
-  |     +-- Semantic facts
-  |     +-- Retrieval and summarization
+  +-- Memória
+  |     +-- Memórias episódicas
+  |     +-- Fatos semânticos
+  |     +-- Recuperação e sumarização
   |
-  +-- LLM Provider Adapter
+  +-- Adaptador de Provedor de LLM
   |
-  +-- Tools / Independent Simulation
-        +-- Explicitly allowlisted actions
-        +-- Observable state and action results
+  +-- Ferramentas / Simulação Independente
+        +-- Ações explicitamente permitidas
+        +-- Estado observável e resultados das ações
 
-PostgreSQL stores durable state. Optional vector search can be introduced after the basic memory model works.
+PostgreSQL armazena o estado durável. Busca vetorial opcional pode ser
+introduzida depois que o modelo básico de memória estiver funcionando.
 ```
 
-## Proposed stack
+## Stack proposta
 
-| Area | Initial choice | Reason |
-|---|---|---|
-| API | Python, FastAPI | Simple async API and mature ecosystem |
-| Agent logic | Plain Python modules | Keep behavior inspectable before adding frameworks |
-| Database | PostgreSQL | Durable relational state |
-| LLM | Provider adapter | Avoid coupling the project to one model vendor |
-| Client | Web first; desktop wrapper later | Fast iteration |
-| Voice | Separate STT and TTS adapters | Providers can be swapped independently |
-| Deployment | Docker | Reproducible local and cloud environments |
+| Área          | Escolha inicial              | Motivo                                      |
+|---------------|------------------------------|---------------------------------------------|
+| API           | Python + FastAPI             | API assíncrona simples e ecossistema maduro |
+| Lógica do agente | Módulos Python puros      | Manter o comportamento inspecionável        |
+| Banco de dados| PostgreSQL                   | Estado relacional durável                   |
+| LLM           | Adaptador de provedor        | Evitar acoplamento a um único fornecedor    |
+| Cliente       | Web primeiro; desktop depois | Iteração rápida                             |
+| Voz           | Adaptadores STT e TTS separados | Provedores podem ser trocados facilmente |
+| Deploy        | Docker                       | Ambientes locais e na nuvem reproduzíveis   |
 
-## Autonomy cycle
+## Ciclo de autonomia
 
-1. Observe the current conversation or simulation state.
-2. Build a compact context from persona, memory, and current goals.
-3. Decide whether a response or action is appropriate.
-4. Check the action against permissions and safety rules.
-5. Execute only an allowlisted action in the independent simulation.
-6. Record the outcome and decide whether it is worth remembering.
+1. Observar o estado atual da conversa ou da simulação.
+2. Montar um contexto compacto a partir da persona, memória e objetivos atuais.
+3. Decidir se uma resposta ou ação é apropriada.
+4. Verificar a ação contra permissões e regras de segurança.
+5. Executar apenas ações da lista de permissões na simulação independente.
+6. Registrar o resultado e decidir se vale a pena lembrar.
 
-## Safety boundary
+## Limite de segurança
 
-The system is designed for conversation and independent simulation. It must not automate gameplay, inspect process memory, inject code, send inputs, or otherwise control the official FFXIV client. A future integration with that client is out of scope unless Square Enix explicitly authorizes it.
+O sistema é projetado para conversa e simulação independente. Ele **não deve**:
 
-## First implementation milestone
+- Automatizar gameplay
+- Inspecionar memória de processo
+- Injetar código
+- Enviar inputs
+- Controlar o cliente oficial do Final Fantasy XIV
 
-Create a minimal FastAPI service with:
-- health endpoint;
-- chat endpoint;
-- loadable persona configuration;
-- a provider interface with a mock implementation;
-- tests for the API and policy boundary.
+Qualquer integração futura com o cliente oficial está fora de escopo, a menos que a Square Enix autorize explicitamente.
 
-Memory, voice, and autonomous simulation should be added incrementally after this foundation is testable.
+## Primeiro marco de implementação
+
+Criar um serviço FastAPI mínimo com:
+
+- Endpoint de saúde (`/health`)
+- Endpoint de chat (`/chat`)
+- Configuração de persona carregável
+- Interface de provedor com implementação mock
+- Testes para a API e limites de política
+
+Memória, voz e simulação autônoma devem ser adicionadas de forma incremental depois que essa base estiver testável.
