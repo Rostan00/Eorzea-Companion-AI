@@ -14,7 +14,7 @@ class Settings(BaseSettings):
 
     # Aplicação
     app_name: str = "Eorzea Companion AI"
-    app_version: str = "0.1.0"
+    app_version: str = "0.2.0"
     debug: bool = True
 
     # Servidor
@@ -29,6 +29,11 @@ class Settings(BaseSettings):
 
     # Personagem
     default_character: str = "lauda"
+
+    # Memória
+    memory_db_path: str = "data/memories.db"
+    memory_retrieval_limit: int = 5
+    memory_auto_extract: bool = True
 
 
 settings = Settings()
