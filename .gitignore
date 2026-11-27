@@ -1,6 +1,7 @@
 # Python
 __pycache__/
 *.py[cod]
+*$py.class
 .pytest_cache/
 .mypy_cache/
 .ruff_cache/
@@ -10,12 +11,17 @@ venv/
 .env.*
 !.env.example
 
-# Editors and operating systems
+# Editores e sistemas operacionais
 .vscode/
 .idea/
 .DS_Store
 Thumbs.db
 
-# Runtime data
+# Dados de runtime
 data/
 *.log
+
+# Distribuição / build
+dist/
+build/
+*.egg-info/
