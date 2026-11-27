@@ -17,12 +17,12 @@ O projeto busca construir um personagem persistente, com personalidade coerente,
 - Backend em Python + FastAPI
 - Núcleo do agente para percepção, decisões e planejamento
 - Configuração de personalidade e personagem
-- Memória persistente (PostgreSQL inicialmente; busca vetorial pode ser adicionada depois)
+- Memória persistente (SQLite agora; PostgreSQL/vetores depois)
 - Provedor de LLM plugável
 - Interface de voz (speech-to-text e text-to-speech)
 - Simulação independente para testar autonomia
 
-Veja [docs/architecture.md](docs/architecture.md) e [docs/personality.md](docs/personality.md).
+Veja [docs/architecture.md](docs/architecture.md), [docs/personality.md](docs/personality.md) e [docs/memory.md](docs/memory.md).
 
 ## Roadmap de desenvolvimento
 
@@ -36,12 +36,16 @@ Veja [docs/architecture.md](docs/architecture.md) e [docs/personality.md](docs/p
 
 ## Status atual
 
-**Marco 1 concluído** — base funcional criada:
+**Marco 1 concluído** — base funcional criada  
+**Marco 2 concluído** — memória episódica:
 
-- API FastAPI com endpoints `/health` e `/chat`
+- API FastAPI com endpoints `/health`, `/chat`, `/memories`
 - Sistema de persona carregável (**Lauda** — Au'Ra)
 - Interface de LLM com implementação mock
-- Testes básicos
+- Memória persistente (SQLite): episódica, semântica e de objetivos
+- Extração automática de fatos da conversa
+- Recuperação de memórias relevantes no contexto do chat
+- Testes da API e do módulo de memória
 - Documentação em português brasileiro
 
 ## Como rodar localmente
@@ -81,6 +85,11 @@ curl -X POST http://localhost:8000/api/v1/chat \
   -d '{"message": "Bora fazer uma dungeon hoje?"}'
 ```
 
+**Listar memórias:**
+```bash
+curl http://localhost:8000/api/v1/memories
+```
+
 ## Estrutura do projeto
 
 ```text
@@ -91,14 +100,17 @@ Eorzea-Companion-AI/
 │   │   ├── character/    # Persona e identidade
 │   │   ├── core/         # Configurações
 │   │   ├── llm/          # Provedores de LLM
+│   │   ├── memory/       # Memória episódica/semântica
 │   │   └── main.py       # Entrada da aplicação
 │   ├── requirements.txt
 │   └── .env.example
 ├── docs/
 │   ├── architecture.md
-│   └── personality.md
+│   ├── personality.md
+│   └── memory.md
 ├── tests/
-│   └── test_api.py
+│   ├── test_api.py
+│   └── test_memory.py
 └── README.md
 ```
 
